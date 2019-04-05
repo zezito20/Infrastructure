@@ -28,7 +28,7 @@ Prerequisites
 
 	Use of the script:
 
-	
+	CopyCalendarPermission.ps1 -identity newcalendar@contoso.com -from oldcalendar@contoso.com -username admin -password ********
 #>
 
 
