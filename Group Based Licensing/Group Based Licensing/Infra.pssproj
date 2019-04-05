@@ -6,7 +6,8 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>MyApplication</RootNamespace>
     <AssemblyName>MyApplication</AssemblyName>
-    <Name>Group Based Licensing</Name>
+    <Name>Infra</Name>
+    <ProjectHome />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,9 +26,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Compile Include="Group Based Licensing.ps1" />
+    <Folder Include="GroupBasedLicensing\" />
+    <Folder Include="CopyCalendarConfiguration\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CopyCalendarConfiguration\CopyCalendarPermission.ps1" />
+    <Compile Include="GroupBasedLicensing\Group Based Licensing.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="Build" />
