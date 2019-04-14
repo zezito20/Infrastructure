@@ -28,18 +28,19 @@ Prerequisites
 
 	Use of the script:
 
-	CopyCalendarPermission.ps1 -identity newcalendar@contoso.com -from oldcalendar@contoso.com -username admin -password ********
+	CopyCalendarPermission.ps1 -identity 'newcalendar1@contoso.com,newcalendar2@contoso.com' -from oldcalendar@contoso.com -username admin -password ********
 #>
 
 
 #defining parameters for the use of the script.
 param (
-		[Parameter(Position=0,Mandatory=$true,HelpMessage="")]
+		[Parameter(Position=0,Mandatory=$true,HelpMessage="Mailbox identity")]
 		[ValidateNotNullOrEmpty()]
 		[string]$Identity,
 		
 		
 		[Parameter(Position=1,Mandatory=$true,HelpMessage="Convert mailbox type")]
+		[ValidateNotNullOrEmpty()]
 		[string]$From,
 
 		[Parameter(Position=2,Mandatory=$false,HelpMessage="Admin Username")]
@@ -60,33 +61,32 @@ if([string]::IsNullOrEmpty($username) -or [string]::IsNullOrEmpty($password)){
 		if($cred){
 			$username = $cred.UserName
 			$password = $cred.Password
-
-			<#
-			#decript the string
+			
+			<#			
 			$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($cred.Password)
 			$password = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)#>
 		}else{
 			Write-Error "Admin credential needed"
-			exit;
+			return $false
 		}
-}else{
-	$upwd = ConvertTo-SecureString -String $password -AsPlainText -Force
-	$password = $upwd
-	Continue;
 }
-ipmo ActiveDirectory
+
+#add here condition to handle password and username were set at first.
 
 #create a new credential object
-$credAdmin = New-Object System.Management.Automation.PSCredential ($username,$password)
-
+$credAdmin = New-Object System.Management.Automation.PSCredential -ArgumentList ($username,$password)
 #starts a new office365 session with the admin creds. !this does not support modern auth. For issues please email me on the contact above.
 $PSsession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Authentication Basic -AllowRedirection -Credential $credAdmin
-
-$IdentityList = ($Identity); #if user enter one or more calendars set it as list.
+Import-PSSession -Session $PSsession -DisableNameChecking
+$IdList = $Identity.ToString() #if user enter one or more calendars set it as list.
+$IdentityList = $IdList.Split(",")
+Write-Host $IdentityList
+pause
 
 #get the calendar permissions
 try{
 	$fromID = $From + ":\calendar"
+	Write-Host $fromID
 	$cal = Get-MailboxFolderPermission -Identity $fromID | select AccessRights, User
 }catch{
 	Write-Host "Mailbox calendar could not be found or email address typed wrong."
@@ -102,10 +102,10 @@ $IdentityList | ForEach-Object {
 	$str1 = Get-Mailbox -id $_ 
 		if($str1.RecipientTypeDetails -ne 'UserMailbox') #Condition to apply only on mailboxes that are not type users mailbox. For this exercise I wanted to target only shared and room type.
 		{
-			$folder = $_ + "calendar";
+			$folder = $_ + ":\calendar";
 			foreach ($id in $permissionsSet)
 			{
-				Set-MailboxFolderPermission -Identity $folder -User $id.Name -AccessRights $id.AccessRights -Confirm:$true #here you can see which permission are being set. You are free to chnage this.
+				Add-MailboxFolderPermission -Identity $folder -User $id.Name -AccessRights $id.AccessRights -Confirm:$false #here you can see which permission are being set. You are free to chnage this.
 
 				#Here you can expand the script workload to apply other settings such as calendar configuration
 				<#
@@ -116,4 +116,5 @@ $IdentityList | ForEach-Object {
 			}
 		}
 }
+Remove-PSSession -Session $PSsession #temrinate the session
 #end of script
