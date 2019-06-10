@@ -1,4 +1,4 @@
-﻿<#
+<#
 
 DISCLAIMER: This application is a sample application. The sample is provided "as is" without 
 warranty of any kind. 

@@ -6,8 +6,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>MyApplication</RootNamespace>
     <AssemblyName>MyApplication</AssemblyName>
-    <Name>Infra</Name>
-    <ProjectHome />
+    <Name>Infrastructure</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,12 +26,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="GroupBasedLicensing\" />
     <Folder Include="CopyCalendarConfiguration\" />
+    <Folder Include="GroupBasedLicensing\" />
+    <Folder Include="SSHconnectionToTSQL\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CopyCalendarConfiguration\CopyCalendarPermission.ps1" />
-    <Compile Include="GroupBasedLicensing\Group Based Licensing.ps1" />
+    <Compile Include="CopyCalendarConfiguration\calconfig.ps1" />
+    <Compile Include="GroupBasedLicensing\GroupBasedLic.ps1" />
+    <Compile Include="SSHconnectionToTSQL\SSHConnector.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="Build" />
